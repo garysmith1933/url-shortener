@@ -2,10 +2,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
-const shortUrl = require("./models/urls");
+const { urlModel } = require("./models/urls");
 
 app.use(express.urlencoded({ extended: false }));
-app.use(cors())
+app.use(cors());
+app.use(express.json());
 
 mongoose.connect("mongodb://localhost/urlShortener", {
   useNewUrlParser: true,
@@ -19,12 +20,13 @@ app.get('/', (req, res) => {
 
 app.post('/shortenUrl', async (req, res) => {
   try {
-    //left off here
-    const foundUrl = await shortUrl.findOne({ fullUrl: req.body.fullUrl });
+    //left off here - shortUrl.findOne is not a function
+    const foundUrl = await urlModel.findOne({ fullUrl: req.body.fullUrl });
+    console.log(req.body)
 
-    if (foundUrl) res.send(foundUrl.shortUrl)
+    if (foundUrl) return res.send(foundUrl.shortUrl)
   
-    const shortenedUrl = await shortUrl.create({fullUrl: req.body.fullUrl})
+    const shortenedUrl = await urlModel.create({fullUrl: req.body.fullUrl})
     res.send(shortenedUrl.shortUrl)
   }
 
